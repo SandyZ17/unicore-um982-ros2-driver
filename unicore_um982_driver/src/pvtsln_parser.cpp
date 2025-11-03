@@ -39,7 +39,7 @@ bool parsePVTSLN(const std::string& line, PVTSLNData& data)
         }
         
         // Remove leading # if present
-        if (msg[0] == '#') {
+        if (!msg.empty() && msg[0] == '#') {
             msg = msg.substr(1);
         }
         

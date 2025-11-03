@@ -35,7 +35,7 @@ unicore_um982_driver:
     # These parameters configure the external str2str NTRIP client
     # str2str is part of RTKLIB and must be installed separately
     ntrip_server: "rtk2go.com"           # NTRIP caster server hostname/IP
-    ntrip_port: "2101"                   # NTRIP caster port (typically 2101)
+    ntrip_port: 2101                     # NTRIP caster port (typically 2101)
     ntrip_mountpoint: "FIXED"            # NTRIP mountpoint name
     ntrip_user: "user"                   # NTRIP username (if required)
     ntrip_pass: "password"               # NTRIP password (if required)
