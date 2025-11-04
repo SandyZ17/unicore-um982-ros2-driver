@@ -6,16 +6,16 @@
 unicore_um982_driver:
   ros__parameters:
     # Serial port configuration
-    port: "/dev/ttyUSB0"        # USB serial port device for UM982 receiver
-    baudrate: 230400            # Communication baud rate (matches UM982 COM3 config)
+    port: "/dev/ttyUSB1"        # USB serial port device for UM982 receiver
+    baudrate: 115200            # Communication baud rate (matches UM982 COM3 config)
     
     # Receiver configuration commands
     # These commands are sent to the UM982 receiver during initialization
     config_commands:
-      - "CONFIG COM3 230400"           # Set COM3 to 230400 baud
+      - "CONFIG COM3 115200"           # Set COM3 to 115200 baud
       - "MODE ROVER SURVEY"            # Set receiver mode
       - "unmask GPS"                   # Enable GPS constellation
-      - "unmask bds"                   # Enable BeiDou constellation  
+      - "unmask BDS"                   # Enable BeiDou constellation  
       - "unmask GLO"                   # Enable GLONASS constellation
       - "unmask GAL"                   # Enable Galileo constellation
       - "unmask QZSS"                  # Enable QZSS constellation
@@ -28,7 +28,7 @@ unicore_um982_driver:
       - "CONFIG HEADING FIXLENGTH"     # Enable fixed-length heading
       - "CONFIG HEADING LENGTH 43 1"   # Set heading baseline length (43cm with 1cm tolerance)
       - "CONFIG HEADING RELIABILITY 3" # Set heading reliability level
-      - "PVTSLNA COM3 0.05"            # Enable PVTSLN output at 20Hz (0.05s interval)
+      - "PVTSLNA 1"            # Enable PVTSLN output at 20Hz (0.05s interval)
       - "SAVECONFIG"                   # Save all configuration to non-volatile memory
     
     # NTRIP Client Configuration

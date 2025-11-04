@@ -145,3 +145,5 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+config/

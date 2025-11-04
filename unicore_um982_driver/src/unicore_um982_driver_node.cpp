@@ -275,7 +275,6 @@ private:
     {
         static std::string line_buffer;
         line_buffer += data;
-
         // Process complete lines
         size_t pos = 0;
         while ((pos = line_buffer.find('\n')) != std::string::npos)
@@ -293,10 +292,11 @@ private:
             if (line.find("PVTSLN") != std::string::npos)
             {
                 RCLCPP_DEBUG(this->get_logger(), "Raw PVTSLN: %s", line.c_str());
-
                 // Parse the PVTSLN message
                 unicore_um982_driver::PVTSLNData parsed_data;
-                if (unicore_um982_driver::parsePVTSLN(line, parsed_data))
+                std::string parse_error;
+                auto clock = this->get_clock();
+                if (unicore_um982_driver::parsePVTSLN(line, parsed_data, &parse_error))
                 {
                     RCLCPP_DEBUG(this->get_logger(),
                                  "Parsed PVTSLN - Status: %s, Lat: %.8f, Lon: %.8f, Alt: %.3f, Heading: %.2f, Sats: %d",
@@ -306,6 +306,20 @@ private:
                                  parsed_data.altitude,
                                  parsed_data.heading,
                                  parsed_data.num_satellites_tracked);
+                    if (clock)
+                    {
+                        RCLCPP_INFO_THROTTLE(this->get_logger(), *clock, 2000,
+                                             "PVTSLN parsed: status=%s, lat=%.8f, lon=%.8f, alt=%.3f, heading=%.2f, sats=%d/%d, diff_age=%.2f, prns=%u",
+                                             parsed_data.position_status.c_str(),
+                                             parsed_data.latitude,
+                                             parsed_data.longitude,
+                                             parsed_data.altitude,
+                                             parsed_data.heading,
+                                             parsed_data.num_satellites_tracked,
+                                             parsed_data.num_satellites_used,
+                                             parsed_data.age_of_corrections,
+                                             static_cast<unsigned>(parsed_data.prn_count));
+                    }
 
                     // Publish ROS 2 messages
                     publishNavSatFix(parsed_data);
@@ -313,7 +327,20 @@ private:
                 }
                 else
                 {
-                    RCLCPP_WARN(this->get_logger(), "Failed to parse PVTSLN message");
+                    const char *reason = parse_error.empty() ? "unknown error" : parse_error.c_str();
+                    if (clock)
+                    {
+                        RCLCPP_WARN_THROTTLE(this->get_logger(), *clock, 2000,
+                                             "Failed to parse PVTSLN message: %s | raw='%s'",
+                                             reason,
+                                             line.c_str());
+                    }
+                    else
+                    {
+                        RCLCPP_WARN(this->get_logger(), "Failed to parse PVTSLN message: %s | raw='%s'",
+                                    reason,
+                                    line.c_str());
+                    }
                 }
             }
         }
